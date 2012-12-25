@@ -1,0 +1,66 @@
+<!DOCTYPE html> 
+<html> 
+  <head> 
+    <title>My Page</title> 
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.css" />
+    <script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.js"></script>
+    <script>
+      function appendList(name){
+        $("#list").append('<li data-icon="delete"><a href="#">'+name+"</a></li>");
+        $("#list").listview('refresh');
+      }
+
+      $(document).ready(function(){
+        // populate the list
+        $.getJSON("/rest/item/index",function(data){
+          for(var i=0;i<data.length;i++){
+            appendList(data[i].name);
+          }
+        });
+
+        // add button
+        $("#addButton").click(function(){
+          var name=$("#itemName").val();
+          $.post('/rest/item/add',{name: name});
+          appendList(name);
+          $("#itemName").val('');
+        });
+
+        // add on 'enter'
+        $("#itemName").keyup(function(event){
+          if(event.keyCode == 13){
+            $("#addButton").click();
+          }
+        });
+
+        // remove
+        $("#list").on("click","a", function(){
+          var name = $(this).text();
+          $.post('/rest/item/delete',{name: name});
+          $(this).closest('li').remove();
+        });
+
+      });
+    </script>
+  </head> 
+  <body> 
+
+    <div data-role="page">
+
+      <div data-role="header">
+        <h1>Shopping List</h1>
+      </div><!-- /header -->
+
+      <div data-role="content">	
+        <input id="itemName" type="text" name="name" />
+        <a id="addButton" href="#" data-role="button" data-icon="plus">Add</a>
+        <ul id="list" data-role="listview" data-inset="true">
+        </ul>
+      </div><!-- /content -->
+
+    </div><!-- /page -->
+
+  </body>
+</html>
