@@ -42,7 +42,7 @@
           var name=$("#itemName").val();
           if(name.length == 0){
             notify('Please enter a name first');
-          }else if($('#list a:contains("'+name+'")').length){
+            }else if($('#list a').filter(function(){ return $(this).text()==name}).length){
             notify(name+' already exists');
           }else{
             $.post('/rest/item/add',{name: name});
