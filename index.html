@@ -10,6 +10,23 @@
       function appendList(name){
         $("#list").append('<li data-icon="delete"><a href="#">'+name+"</a></li>");
         $("#list").listview('refresh');
+        incCounter();
+      }
+
+      function incCounter(){
+        var counter = $("#counter");
+        counter.text(parseInt(counter.text())+1);
+      }
+
+      function decCounter(){
+        var counter = $("#counter");
+        counter.text(parseInt(counter.text())-1);
+      }
+
+      function notify(msg){
+        var notification = $("#notification");
+        notification.text(msg);
+        notification.popup("open");
       }
 
       $(document).ready(function(){
@@ -23,9 +40,15 @@
         // add button
         $("#addButton").click(function(){
           var name=$("#itemName").val();
-          $.post('/rest/item/add',{name: name});
-          appendList(name);
-          $("#itemName").val('');
+          if(name.length == 0){
+            notify('Please enter a name first');
+          }else if($('#list a:contains("'+name+'")').length){
+            notify(name+' already exists');
+          }else{
+            $.post('/rest/item/add',{name: name});
+            appendList(name);
+            $("#itemName").val('');
+          }
         });
 
         // add on 'enter'
@@ -40,6 +63,7 @@
           var name = $(this).text();
           $.post('/rest/item/delete',{name: name});
           $(this).closest('li').remove();
+          decCounter();
         });
 
       });
@@ -51,9 +75,11 @@
 
       <div data-role="header">
         <h1>Shopping List</h1>
+        <div id="notification" data-position-to="#notification" data-role="popup"></div>
       </div><!-- /header -->
 
       <div data-role="content">	
+        <div>Total: <span id="counter">0</span></div>
         <input id="itemName" type="text" name="name" />
         <a id="addButton" href="#" data-role="button" data-icon="plus">Add</a>
         <ul id="list" data-role="listview" data-inset="true">
