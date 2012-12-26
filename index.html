@@ -7,8 +7,8 @@
     <script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
     <script src="http://code.jquery.com/mobile/1.2.0/jquery.mobile-1.2.0.min.js"></script>
     <script>
-      function appendList(name){
-        $("#list").append('<li data-icon="delete"><a href="#">'+name+"</a></li>");
+      function addToList(name){
+        $("#list").prepend('<li data-icon="delete"><a href="#">'+name+"</a></li>");
         $("#list").listview('refresh');
         incCounter();
       }
@@ -33,7 +33,7 @@
         // populate the list
         $.getJSON("/rest/item/index",function(data){
           for(var i=0;i<data.length;i++){
-            appendList(data[i].name);
+            addToList(data[i].name);
           }
         });
 
@@ -46,7 +46,7 @@
             notify(name+' already exists');
           }else{
             $.post('/rest/item/add',{name: name});
-            appendList(name);
+            addToList(name);
             $("#itemName").val('');
           }
         });
